@@ -9,7 +9,7 @@
 - Build Command: `echo ready`.
 - Publish Directory: `.`.
 
-После изменения `index.html` и сохранения в ветку `main` Render обновляет сайт автоматически.
+После изменения `index.html` и сохранения в ветку `main` проверьте новый деплой в Render. Если он не начался автоматически, используйте Manual Deploy → Deploy latest commit.
 
 ## Содержание
 
