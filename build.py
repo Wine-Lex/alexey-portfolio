@@ -8,6 +8,6 @@ with ZipFile("sites-bundle.zip") as bundle:
         if not target.is_relative_to(destination.resolve()):
             raise ValueError("Unsafe archive path")
     bundle.extractall(destination)
-for site in ("north","signal","forma","sever","turbo"):
+for site in ("north","signal","forma","sever","turbo","wave"):
     assert (destination/site/"index.html").exists()
-print("Five static portfolio projects ready")
+print("Six static portfolio projects ready")
