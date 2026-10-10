@@ -35,7 +35,7 @@ class World{
  scene(name){this.clear();this.temperature=20;this.gravity=true;this.wind=0;this.rain=false;
  if(name==='blank')return;
  for(let x=0;x<W;x++){const top=83+Math.round(Math.sin(x/13)*3+Math.sin(x/29)*4);for(let y=top;y<H;y++)this.put(x,y,3);}
- if(name==='oasis'){for(let x=12;x<147;x++)for(let y=84;y<92;y++)if(this.get(x,y)===3)this.put(x,y,1);for(let x=41;x<117;x++)for(let y=75;y<86;y++)this.put(x,y,2);for(let x=49;x<112;x+=5)this.put(x,72,6);for(let x=18;x<33;x++)for(let y=58;y<67;y++)this.put(x,y,1);for(let y=33;y<68;y++)this.put(25,y,5);for(let x=15;x<36;x++)this.put(x,34,7);}
+ if(name==='oasis'){for(let x=12;x<147;x++)for(let y=84;y<92;y++)if(this.get(x,y)===3)this.put(x,y,1);for(let x=41;x<117;x++)for(let y=75;y<86;y++)this.put(x,y,2);for(let x=49;x<112;x+=5)this.put(x,72,6);for(let x=18;x<33;x++)for(let y=58;y<67;y++)this.put(x,y,1);for(let y=33;y<84;y++)this.put(25,y,5);for(let x=15;x<36;x++)this.put(x,34,7);}
  if(name==='rain'){for(let x=25;x<131;x++)for(let y=65;y<69;y++)this.put(x,y,3);for(let x=66;x<88;x++)for(let y=65;y<69;y++)this.put(x,y,0);for(let x=29;x<53;x++)for(let y=53;y<65;y++)this.put(x,y,1);this.rain=true;}
  if(name==='volcano'){for(let x=33;x<128;x++){const top=Math.round(87-40*Math.max(0,1-Math.abs(x-80)/48));for(let y=top;y<90;y++)this.put(x,y,3);}for(let x=75;x<86;x++)for(let y=44;y<83;y++)this.put(x,y,10);for(let x=12;x<31;x++)for(let y=75;y<84;y++)this.put(x,y,2);for(let x=130;x<145;x++)for(let y=59;y<68;y++)this.put(x,y,5);}
  if(name==='winter'){this.temperature=-15;for(let x=25;x<130;x++)for(let y=76;y<85;y++)this.put(x,y,2);for(let x=45;x<68;x++)for(let y=50;y<73;y++)this.put(x,y,9);for(let x=80;x<105;x++)for(let y=62;y<77;y++)this.put(x,y,5);}
@@ -43,6 +43,7 @@ class World{
  }
 }
 function validateSnapshot(s){if(!s||s.version!==1||s.width!==W||s.height!==H||!Array.isArray(s.cells)||!Array.isArray(s.life)||s.cells.length!==N||s.life.length!==N)throw Error('Это не файл мира ТЕРРА версии 1.');if(s.cells.some(v=>!Number.isInteger(v)||v<0||v>10)||s.life.some(v=>!Number.isInteger(v)||v<0||v>65535)||!Number.isInteger(s.tick)||s.tick<0||s.tick>1e12||!Number.isInteger(s.seed)||s.seed<0||s.seed>4294967295||!Number.isFinite(s.temperature)||s.temperature< -20||s.temperature>80||![-1,0,1].includes(s.wind)||typeof s.gravity!=='boolean'||typeof s.rain!=='boolean')throw Error('В файле мира некорректные данные.');return s;}
+
 
 const world=new World(),canvas=document.querySelector('#world'),ctx=canvas.getContext('2d',{alpha:false}),image=ctx.createImageData(W,H),$=s=>document.querySelector(s);
 let selected=1,brush=4,speed=1,paused=matchMedia('(prefers-reduced-motion: reduce)').matches,history=[],library=[],drawing=false,lastPoint=null,paintType=1,keyboard={x:80,y:45},scene='oasis',noticeTimer,storageOK=true,lastTime=0,accum=0,lastTelemetry=0,fpsFrames=0,fpsSince=0,autosaveAt=0;
