@@ -10,7 +10,7 @@ function conflicts(stops){const sorted=[...stops].sort((a,b)=>minutes(a.time)-mi
 function tripDate(trip,day){const d=new Date(trip.start+'T12:00:00');d.setDate(d.getDate()+day-1);return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});}
 function validState(s){
  if(!s||s.version!==1||!Array.isArray(s.trips)||s.trips.length<1||s.trips.length>30)throw Error('Нужен файл поездок АТЛАС версии 1.');
- const ids=new Set();const id=x=>{if(typeof x!=='string'||!x||x.length>100||ids.has(x))throw Error('В файле повторяются или отсутствуют идентификаторы.');ids.add(x);};
+ const ids=new Set();const id=x=>{if(typeof x!=='string'||! /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x)||ids.has(x))throw Error('В файле повторяются или некорректны идентификаторы.');ids.add(x);};
  const str=(x,max)=>{if(typeof x!=='string'||x.length>max)throw Error('В файле некорректный текст.');};
  const num=(x,min,max)=>{if(typeof x!=='number'||!Number.isFinite(x)||x<min||x>max)throw Error('В файле некорректные числа.');};
  for(const t of s.trips){id(t.id);str(t.name,80);str(t.city,60);str(t.note,300);if(!/^\d{4}-\d{2}-\d{2}$/.test(t.start)||!Number.isFinite(Date.parse(t.start+'T12:00:00'))||new Date(t.start+'T12:00:00').toISOString().slice(0,10)!==t.start)throw Error('Неверная дата поездки.');num(t.days,1,14);num(t.travelers,1,12);num(t.budget,0,1e9);if(!Number.isInteger(t.days)||!Number.isInteger(t.travelers))throw Error('Количество дней и людей должно быть целым.');if(!Array.isArray(t.stops)||t.stops.length>200||!Array.isArray(t.expenses)||t.expenses.length>500||!Array.isArray(t.checklist)||t.checklist.length>300)throw Error('Слишком много записей.');
