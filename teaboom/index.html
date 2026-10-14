@@ -14,23 +14,23 @@
   <a class="skip-link" href="#product">К карточке товара</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="https://teaboom.ru/" aria-label="Чайный Бум — сайт магазина">
+      <div class="brand">
         <img src="assets/logo.png" alt="" width="50" height="50">
-        <span><strong>Чайный Бум</strong><span class="brand-caption">Интернет-магазин чая и посуды</span></span>
-      </a>
+        <span><strong>Чайный Бум</strong><span class="brand-caption">Карточка товара · тестовое задание</span></span>
+      </div>
       <p class="demo-label">Тестовое задание · HTML / CSS / JS</p>
     </div>
   </header>
 
   <main class="container" id="product">
-    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+    <div class="breadcrumbs">
       <ol>
-        <li><a href="https://teaboom.ru/">Начало</a></li>
-        <li><a href="https://teaboom.ru/category-root">Каталог</a></li>
-        <li><a href="https://teaboom.ru/category-ulun">Улун</a></li>
+        <li>Начало</li>
+        <li>Каталог</li>
+        <li>Улун</li>
         <li aria-current="page">Ананасовый улун</li>
       </ol>
-    </nav>
+    </div>
 
     <article class="product" aria-labelledby="product-title">
       <h1 id="product-title">Ананасовый улун</h1>
@@ -40,7 +40,7 @@
         </figure>
 
         <div class="product-details">
-          <a class="category" href="https://teaboom.ru/category-kitajskij-svetlyj-aromatizirovannyj-ulun">Китайский светлый ароматизированный улун</a>
+          <span class="category">Китайский светлый ароматизированный улун</span>
           <p class="availability"><span aria-hidden="true"></span>В наличии: много</p>
 
           <form class="purchase-form" id="purchase-form">
