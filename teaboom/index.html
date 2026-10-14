@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Тестовая вёрстка карточки Ананасового улуна: выбор фасовки, цены и адаптивный интерфейс.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ананасовый улун — Чайный Бум · тестовое задание</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="product.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#product">К карточке товара</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="https://teaboom.ru/" aria-label="Чайный Бум — сайт магазина">
+        <img src="assets/logo.png" alt="" width="50" height="50">
+        <span><strong>Чайный Бум</strong><span class="brand-caption">Интернет-магазин чая и посуды</span></span>
+      </a>
+      <p class="demo-label">Тестовое задание · HTML / CSS / JS</p>
+    </div>
+  </header>
+
+  <main class="container" id="product">
+    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+      <ol>
+        <li><a href="https://teaboom.ru/">Начало</a></li>
+        <li><a href="https://teaboom.ru/category-root">Каталог</a></li>
+        <li><a href="https://teaboom.ru/category-ulun">Улун</a></li>
+        <li aria-current="page">Ананасовый улун</li>
+      </ol>
+    </nav>
+
+    <article class="product" aria-labelledby="product-title">
+      <h1 id="product-title">Ананасовый улун</h1>
+      <div class="product-layout">
+        <figure class="product-photo">
+          <img src="assets/pineapple-oolong.jpg" alt="Крупнолистовой зелёный улун с кусочками ананаса и цукатами" width="800" height="800" fetchpriority="high">
+        </figure>
+
+        <div class="product-details">
+          <a class="category" href="https://teaboom.ru/category-kitajskij-svetlyj-aromatizirovannyj-ulun">Китайский светлый ароматизированный улун</a>
+          <p class="availability"><span aria-hidden="true"></span>В наличии: много</p>
+
+          <form class="purchase-form" id="purchase-form">
+            <fieldset class="packages">
+              <legend>Выберите фасовку</legend>
+              <div class="package-options">
+                <label class="package"><input type="radio" name="package" value="100" checked><span>100 г</span></label>
+                <label class="package"><input type="radio" name="package" value="500"><span>500 г</span></label>
+                <label class="package"><input type="radio" name="package" value="1000"><span>1000 г</span></label>
+                <label class="package"><input type="radio" name="package" value="5000"><span>5000 г</span></label>
+              </div>
+            </fieldset>
+
+            <div class="offer" aria-live="polite" aria-atomic="true">
+              <p class="sku">Артикул: <span id="sku">01306</span></p>
+              <div class="prices">
+                <p class="current-price"><span class="sr-only">Цена: </span><span id="current-price">326,40 ₽</span></p>
+                <p class="old-price"><span class="sr-only">Старая цена: </span><del id="old-price">349,20 ₽</del></p>
+              </div>
+            </div>
+
+            <button class="cart-button" type="submit">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 3h3l2.5 12h11L21 7H6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg>
+              В корзину
+            </button>
+            <p class="demo-note">Демонстрация: заказ и оплата не оформляются.</p>
+            <p class="cart-status" id="cart-status" role="status"></p>
+          </form>
+
+          <section class="description" aria-labelledby="description-title">
+            <h2 id="description-title">Описание</h2>
+            <p>Светлый фуцзяньский улун с ароматом спелого ананаса. Крупный скрученный лист медленно раскрывается при заваривании, давая прозрачный светло-янтарный настой.</p>
+            <p class="ingredients"><strong>Состав:</strong> китайский бирюзовый чай, цукаты, натуральные ароматические масла.</p>
+          </section>
+          <noscript><p class="no-script">Для переключения фасовки включите JavaScript. Сейчас показана фасовка 100 г.</p></noscript>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="container page-footer">
+    <p>Учебная карточка по заданию Teaboom.ru · Алексей Курсанов</p>
+    <a href="source.zip" download>Скачать исходники и README</a>
+  </footer>
+</body>
+</html>
