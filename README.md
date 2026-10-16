@@ -1,31 +1,30 @@
-# Портфолио Алексея Курсанова
+# Alexey Kursanov — Websites & Web Applications
 
-Одностраничный сайт с услугами, проектом ShiftFlow и формой подготовки запроса. Все стили и JavaScript находятся в `index.html`. Дополнительных библиотек, сборки или базы данных нет.
+I create websites and small web applications, improve existing pages, fix layout issues, make interfaces work on mobile, and connect enquiry forms to Telegram.
 
-## Размещение на Render
+Available for remote, project-based work and focused website fixes. Based in Ust-Kamenogorsk, Kazakhstan (UTC+5). Communication in Russian or written English with translation tools.
 
-- Тип: **Static Site**.
-- Ветка: `main`.
-- Build Command: `echo ready`.
-- Publish Directory: `.`.
+## Selected personal and demonstration projects
 
-После изменения `index.html` и сохранения в ветку `main` проверьте новый деплой в Render. Если он не начался автоматически, используйте Manual Deploy → Deploy latest commit.
+- [My Shifts](https://moi-smeny.onrender.com/) — a personal shift and earnings tracker with accounts, synchronisation, calculations and CSV export.
+- [NORTH](https://north-barber-alexey.onrender.com/) — a demonstration barbershop website with an interactive booking flow. No real appointments are made.
+- [SEVER](https://sever-store-alexey.onrender.com/) — a demonstration outdoor store with product filters, favourites, comparison and a cart. No purchases are processed.
+- [TERRA](https://terra-lab-alexey.onrender.com/) — an interactive browser sandbox with materials, drawing tools and saved worlds.
+- [ATLAS](https://atlas-travel-alexey.onrender.com/) — a trip planner with routes, budgets and checklists saved on the device.
+- [SIGNAL](https://signal-game-alexey.onrender.com/) — a browser puzzle game with an ending and restart.
+- [FORMA](https://forma-studio-alexey.onrender.com/) — a creative toolkit for posters, palettes and typography.
+- [TURBO](https://turbo-race-alexey.onrender.com/) — a typing race with virtual opponents.
+- [VOLNA](https://volna-studio-alexey.onrender.com/) — a browser music sequencer with WAV export.
+- [ShiftFlow](https://shiftflow-xmpy.onrender.com/) — a personal project for team shifts and checklists.
 
-## Содержание
+These are personal and demonstration projects, not a list of paid client engagements.
 
-Изменить имя можно поиском `Алексей Курсанов` в HTML. Ссылка проекта: `https://shiftflow-xmpy.onrender.com/`.
+## Work with me
 
-Представления ShiftFlow в портфолио — визуальные иллюстрации с вымышленными данными, а не подключение к рабочей базе. Они не содержат данных сотрудников или кодов компании.
+Send a link to your existing site or a short description of what you want to create or improve. We will agree on the scope, price and timeline before starting.
 
-## Обращения клиентов
+- [Portfolio — all projects](https://alexey-portfolio-uk1x.onrender.com/)
+- [Telegram: @alexey_kursanov_web](https://t.me/alexey_kursanov_web)
+- [WhatsApp](https://wa.me/77078053250)
 
-Публичные контакты расположены на первом экране, в блоке обращения и в подвале:
-
-- Telegram: https://t.me/alexey_kursanov_web
-- WhatsApp: https://wa.me/77078053250 (+7 707 805 32 50).
-
-Форма копирует запрос в буфер обмена. Посетитель отправляет его в выбранном мессенджере. Автоматической отправки на сервер нет.
-
-## Проверка
-
-Проверены синтаксис JavaScript, якорные ссылки, мобильная вёрстка, переключение демонстрационных экранов и копирование запроса. Для предварительного просмотра достаточно открыть `index.html` или запустить любой локальный статический сервер.
+Hosting, domains, third-party services and ongoing support are discussed separately.
