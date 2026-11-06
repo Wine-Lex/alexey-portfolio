@@ -9,8 +9,10 @@ function rows(id,items,value){const el=$(id);el.replaceChildren();if(!items.leng
 function render(d){
  $('login').hidden=true;$('dashboard').hidden=false;
  $('coverage').textContent='Обновлено '+dt(new Date())+' · только с согласия посетителей · '+(d.startedAt?'первые сохранённые данные: '+dt(d.startedAt):'сбор подключён, посещений пока нет');
- const t=d.totals,stats=[['Браузеры',t.browsers],['Визиты',t.visits],['Просмотры',t.views],['Новые браузеры',t.new_browsers],['Вернувшиеся браузеры',t.returning_browsers],['Переходы к проектам',t.project_clicks],['Нажатия на связь',t.contact_clicks],['Отправленные заявки',t.leads]];
- $('stats').replaceChildren(...stats.map(([title,n])=>{const a=document.createElement('div'),b=document.createElement('strong'),s=document.createElement('span');a.className='stat';b.textContent=n;s.textContent=title;a.append(b,s);return a}));
+ const t=d.totals;
+ const mainStats=[['Посетители',t.browsers],['Переходы к проектам',t.project_clicks],['Нажатия на связь',t.contact_clicks],['Заявки',t.leads]];
+ const secondaryStats=[['Визиты',t.visits],['Просмотры',t.views],['Новые браузеры',t.new_browsers],['Вернувшиеся браузеры',t.returning_browsers]];
+ for(const [id,items]of [['stats',mainStats],['secondary-stats',secondaryStats]])$(id).replaceChildren(...items.map(([title,n])=>{const a=document.createElement('div'),b=document.createElement('strong'),s=document.createElement('span');a.className='stat';b.textContent=n;s.textContent=title;if(title==='Посетители')a.title='Уникальные анонимные браузеры. Один человек может использовать несколько браузеров.';a.append(b,s);return a}));
  const days=[],byDate=new Map(d.daily.map(r=>[r.day,r]));for(let i=0;i<d.days;i++){const date=new Date(Date.parse(d.from)+i*86400000+5*3600000).toISOString().slice(0,10);days.push(byDate.get(date)||{day:date,visits:0,browsers:0,views:0})}
  $('chart').replaceChildren();const max=Math.max(1,...days.map(r=>r.visits));for(const r of days){const bar=document.createElement('i');bar.style.setProperty('--height',Math.max(1,130*r.visits/max)+'px');bar.title=r.day+': '+r.visits+' визитов';bar.setAttribute('aria-label',bar.title);$('chart').append(bar)}
  table('daily',days.slice().reverse(),(tr,r)=>{cell(tr,r.day);cell(tr,r.browsers);cell(tr,r.visits);cell(tr,r.views)});
