@@ -1,6 +1,7 @@
 'use strict';
 const http=require('node:http');
 const crypto=require('node:crypto');
+const analytics=require('./analytics.bundle.cjs');
 const allowedOrigin='https://alexey-portfolio-uk1x.onrender.com';
 const token=process.env.TELEGRAM_BOT_TOKEN;
 const chat=process.env.TELEGRAM_CHAT_ID;
@@ -11,6 +12,7 @@ setInterval(()=>{const now=Date.now();for(const[k,v]of cache)if(v.until<now)cach
 const server=http.createServer(async(req,res)=>{
  const origin=req.headers.origin;
  if(req.method==='GET'&&req.url==='/health'){return reply(res,200,{ok:!!(token&&chat)})}
+ if(await analytics.route(req,res))return;
  if(req.url!=='/api/leads')return reply(res,404,{error:'Not found'});
  if(origin!==allowedOrigin)return reply(res,403,{error:'Запрос разрешён только с сайта портфолио.'});
  if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':allowedOrigin,'Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type','Access-Control-Max-Age':'600','Vary':'Origin'});return res.end()}
@@ -43,3 +45,4 @@ const server=http.createServer(async(req,res)=>{
 server.requestTimeout=150000;server.headersTimeout=20000;
 if(require.main===module)server.listen(Number(process.env.PORT)||3000,'0.0.0.0',()=>console.log('Portfolio leads server ready'));
 module.exports={server};
+

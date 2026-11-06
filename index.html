@@ -43,7 +43,7 @@
 .mobile-project-nav{display:none}.between-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;background:#f3eadb;color:#6d4c35}.between-preview strong{font-family:Georgia,serif;font-weight:400;font-size:34px;letter-spacing:-1px}.between-kicker{font-size:10px;letter-spacing:1px;text-transform:uppercase;text-align:center}.between-preview>span:not(.between-kicker){font-family:Georgia,serif;font-style:italic;font-size:17px}.between-preview .between-status{font-family:inherit!important;font-style:normal!important;font-size:11px!important;border:1px solid #b99c78;border-radius:30px;padding:5px 10px}.between-preview svg{max-width:100%;width:180px;height:52px;flex:none}.between-preview{gap:8px;padding:16px}
 @media(max-width:760px){.gallery-enhanced .case-details,.gallery-enhanced .project-card{scroll-margin-top:260px}.gallery-enhanced .mobile-project-nav{display:grid;gap:8px;position:sticky;top:72px;z-index:12;padding:12px;margin:0 -1px 16px;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 16px #1728220a}.mobile-project-nav label{font-size:12px;font-weight:600}.mobile-project-nav select{width:100%;min-width:0;min-height:44px;border:1px solid #b8c3b3;border-radius:8px;background:var(--paper);color:var(--ink);padding:8px 10px;font-size:16px}.project-pager{display:flex;align-items:center;justify-content:space-between;gap:8px}.project-pager button{min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:40px;background:var(--ink);color:var(--paper);font-size:13px}.project-pager button:disabled{background:transparent;color:var(--muted);cursor:default;opacity:.55}.project-pager span{font-size:12px;color:var(--muted)}}
 </style>
-</head>
+<link rel="stylesheet" href="/analytics-client.css"><script defer src="/analytics-client.js"></script></head>
 <body>
   <a class="skip" href="#main">Перейти к содержимому</a>
   <header class="top"><div class="wrap nav"><a class="brand" href="#" aria-label="Program Lab — главная"><img class="brand-avatar" src="portfolio-assets/a4f2c58bdc9f.webp" alt="" width="40" height="40" decoding="async"><span>Program Lab</span></a><nav class="navlinks" aria-label="Главное меню"><a href="#services">Услуги</a><a href="#work">Проекты</a><a href="#process">Как работаю</a><a class="nav-cta" href="#contact">Получить оценку ↗</a></nav></div></header>
@@ -223,6 +223,7 @@
         let result; try {result = await response.json();} catch {throw new Error('Сервис временно недоступен. Попробуйте позже или напишите мне напрямую.');}
         if (!response.ok || !result.ok) throw new Error(result.error || 'Не удалось отправить заявку. Попробуйте позже.');
         feedback.textContent = 'Заявка отправлена! Я свяжусь с вами по указанному контакту.';
+        window.dispatchEvent(new Event('pl:lead-sent'));
         leadForm.reset(); lastLeadKey = ''; lastLeadId = '';
       } catch (error) {
         feedback.textContent = error.name === 'AbortError' ? 'Не удалось подтвердить отправку. Напишите мне в Telegram или WhatsApp.' : (error.message === 'Failed to fetch' ? 'Не удалось связаться с сервером. Попробуйте позже или напишите напрямую.' : error.message);
@@ -231,3 +232,5 @@
   </script>
 <nav class="mobile-contact" aria-label="Быстрая связь"><a href="https://t.me/alexey_kursanov_web" target="_blank" rel="noopener noreferrer">Telegram ↗</a><a href="https://wa.me/77078053250" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></nav></body>
 </html>
+
+

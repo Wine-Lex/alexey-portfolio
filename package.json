@@ -1,1 +1,20 @@
-{"name":"alexey-portfolio-leads","version":"1.0.0","private":true,"engines":{"node":">=22"},"scripts":{"start":"node lead-server.cjs"}}
+{
+  "name": "alexey-portfolio-leads",
+  "version": "1.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node lead-server.cjs",
+    "build:analytics": "esbuild analytics-source.cjs --bundle --platform=node --target=node22 --outfile=analytics.bundle.cjs --legal-comments=eof",
+    "test": "node --test analytics.test.cjs analytics-client.test.cjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
+
