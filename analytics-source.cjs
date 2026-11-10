@@ -3,6 +3,7 @@ const {neon,neonConfig}=require('@neondatabase/serverless');
 const {createHmac,createHash,randomBytes,randomInt}=require('node:crypto');
 const fs=require('node:fs');
 const path=require('node:path');
+const {createHub,createOtherReports,makeReader}=require('./hub-source.cjs');
 const PORTFOLIO='https://alexey-portfolio-uk1x.onrender.com';
 const BACKEND='https://alexey-portfolio-leads.onrender.com';
 const PROJECTS=['shiftflow','my-shifts','north','sever','between-lines','terra','signal','forma','turbo','wave','atlas'];
@@ -10,7 +11,7 @@ const SOURCES=['direct','telegram','instagram','headhunter','olx','github','goog
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const hash=v=>createHash('sha256').update(v).digest('hex');
 function validEvent(d){return d&&typeof d==='object'&&!Array.isArray(d)&&Object.keys(d).every(k=>['id','visitor','session','kind','target','source','device','consent'].includes(k))&&d.consent==='2026-11-06'&&[d.id,d.visitor,d.session].every(v=>typeof v==='string'&&UUID.test(v))&&['mobile','desktop'].includes(d.device)&&SOURCES.includes(d.source)&&((d.kind==='view'&&d.target==='')||(d.kind==='project'&&PROJECTS.includes(d.target))||(d.kind==='contact'&&['telegram','whatsapp'].includes(d.target))||(d.kind==='lead'&&d.target===''));}
-function createAnalytics({query,secret,sendCode,publicOrigin=PORTFOLIO,ownerOrigin=BACKEND,clock=()=>Date.now(),secure=true}={}){
+function createAnalytics({query,secret,sendCode,publicOrigin=PORTFOLIO,ownerOrigin=BACKEND,clock=()=>Date.now(),secure=true,otherReports={}}={}){
  const q=query, key=(label,value)=>createHmac('sha256',secret).update(label+':'+value).digest('hex');
  const limits=new Map();let cleanupAt=0;
  function limit(k,n,ms){const now=clock();for(const [id,r]of limits)if(r.until<now)limits.delete(id);if(limits.size>5000)return false;const r=limits.get(k)||{n:0,until:now+ms};limits.set(k,r);return ++r.n<=n;}
@@ -33,6 +34,7 @@ function createAnalytics({query,secret,sendCode,publicOrigin=PORTFOLIO,ownerOrig
   const [coverage]=await q('SELECT min(at) AS started_at FROM pl_events');
   return {totals:totals[0],daily,projects:PROJECTS.map(id=>({target:id,clicks:0,browsers:0,...projects.find(p=>p.target===id)})).sort((a,b)=>b.clicks-a.clicks),contacts,visitors:visitors.map(v=>({...v,visitor:v.visitor.slice(0,12)})),sources,from,to,days,timezone:'UTC+5',retentionDays:180,startedAt:coverage.started_at};
  }
+ const hub=createHub({portfolio:period=>report(period==='all'?180:Number(period)),...otherReports},clock);
  return async function route(req,res){
   const url=new URL(req.url,ownerOrigin),p=url.pathname,origin=req.headers.origin;
   if(!['/owner','/owner/','/owner.js','/owner.css','/api/analytics/event'].includes(p)&&!p.startsWith('/api/owner/'))return false;
@@ -73,6 +75,7 @@ function createAnalytics({query,secret,sendCode,publicOrigin=PORTFOLIO,ownerOrig
     respond(res,200,{ok:true},null,{'Set-Cookie':cookie(session,7*86400)});return true;
    }
    const session=await authenticated(req);if(!session){respond(res,401,{error:'Требуется вход.'});return true;}
+   if(p==='/api/owner/hub'&&req.method==='GET'){if(!limit('hub:'+session,40,60000)){respond(res,429,{error:'Обновляйте отчёт не чаще раза в несколько секунд.'});return true;}respond(res,200,await hub(url.searchParams.get('period')||'7'));return true;}
    if(p==='/api/owner/logout'&&req.method==='POST'){await q('DELETE FROM pl_owner_sessions WHERE token_hash=$1',[session]);respond(res,200,{ok:true},null,{'Set-Cookie':cookie('',0)});return true;}
    if(p==='/api/owner/summary'&&req.method==='GET'){const days=Number(url.searchParams.get('days')||7);if(![1,7,30,90,180].includes(days)){respond(res,400,{error:'Некорректный период.'});return true;}respond(res,200,await report(days));return true;}
    respond(res,404,{error:'Not found'});return true;
@@ -85,11 +88,12 @@ function route(req,res){
  if(!production){
   neonConfig.fetchFunction=(url,options)=>fetch(url,{...options,signal:AbortSignal.timeout(15000)});
   const sql=neon(process.env.ANALYTICS_DATABASE_URL);
-  production=createAnalytics({query:(text,params=[])=>sql.query(text,params),secret:process.env.ANALYTICS_SECRET,sendCode:async code=>{
+  production=createAnalytics({query:(text,params=[])=>sql.query(text,params),secret:process.env.ANALYTICS_SECRET,otherReports:createOtherReports({myshifts:makeReader(process.env.MYSHIFTS_ANALYTICS_URL),between:makeReader(process.env.BETWEEN_ANALYTICS_URL)}),sendCode:async code=>{
    const r=await fetch('https://api.telegram.org/bot'+process.env.TELEGRAM_BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:process.env.TELEGRAM_CHAT_ID,text:'Program Lab · вход в аналитику\n\nКод: '+code+'\nДействует 10 минут, только для вас. Никому не передавайте код.\nЕсли вы не запрашивали вход, проигнорируйте сообщение.'}),signal:AbortSignal.timeout(15000)});const d=await r.json();if(!r.ok||!d.ok)throw Error('Telegram delivery failed');
   }});
  }
  return production(req,res);
 }
 module.exports={route,createAnalytics,validEvent,PROJECTS};
+
 

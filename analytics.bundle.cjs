@@ -1,8 +1,27 @@
 "use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // node_modules/@neondatabase/serverless/index.js
 var require_serverless = __commonJS({
@@ -5259,21 +5278,262 @@ var require_serverless = __commonJS({
   }
 });
 
+// myshifts-metrics.mjs
+var myshifts_metrics_exports = {};
+__export(myshifts_metrics_exports, {
+  CONSENT_VERSION: () => CONSENT_VERSION,
+  EVENTS: () => EVENTS,
+  RETENTION_DAYS: () => RETENTION_DAYS,
+  addDays: () => addDays,
+  attribution: () => attribution,
+  campaignKey: () => campaignKey,
+  dayAt: () => dayAt,
+  periodRange: () => periodRange,
+  summarizeAnalytics: () => summarizeAnalytics,
+  validateBatch: () => validateBatch
+});
+function attribution(input = {}) {
+  return { source: slug(input.source) || "direct", medium: slug(input.medium) || "", campaign: slug(input.campaign) || "" };
+}
+function reject(message) {
+  const e = Error(message);
+  e.status = 400;
+  throw e;
+}
+function validateBatch(input) {
+  if (!input || input.consent !== CONSENT_VERSION) reject("\u0414\u043B\u044F \u0430\u043D\u0430\u043B\u0438\u0442\u0438\u043A\u0438 \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E \u0434\u043E\u0431\u0440\u043E\u0432\u043E\u043B\u044C\u043D\u043E\u0435 \u0441\u043E\u0433\u043B\u0430\u0441\u0438\u0435.");
+  if (!UUID.test(input.visitor) || !UUID.test(input.session) || !Array.isArray(input.events) || !input.events.length || input.events.length > 20) reject("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 \u043F\u0430\u043A\u0435\u0442 \u0430\u043D\u0430\u043B\u0438\u0442\u0438\u043A\u0438.");
+  if (Object.keys(input).some((k) => !["consent", "visitor", "session", "attribution", "events"].includes(k))) reject("\u041B\u0438\u0448\u043D\u0438\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0432 \u0430\u043D\u0430\u043B\u0438\u0442\u0438\u043A\u0435 \u0437\u0430\u043F\u0440\u0435\u0449\u0435\u043D\u044B.");
+  if (input.attribution && (typeof input.attribution !== "object" || Object.keys(input.attribution).some((k) => !["source", "medium", "campaign"].includes(k)))) reject("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043F\u0435\u0440\u0435\u0445\u043E\u0434\u0430.");
+  const events = input.events.map((e) => {
+    if (!e || Object.keys(e).some((k) => !["id", "name"].includes(k)) || !UUID.test(e.id) || !EVENTS.includes(e.name) || e.name === "registration") reject("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E\u0435 \u0441\u043E\u0431\u044B\u0442\u0438\u0435 \u0430\u043D\u0430\u043B\u0438\u0442\u0438\u043A\u0438.");
+    return { id: e.id, name: e.name };
+  });
+  return { ...input, events, attribution: attribution(input.attribution) };
+}
+function periodRange(input, now, startedAt) {
+  const today = dayAt(now), period = input.period || "7";
+  let from = period === "all" ? dayAt(startedAt) : addDays(today, period === "today" ? 0 : period === "30" ? -29 : -6), to = today;
+  if (period === "custom") {
+    if (!validDay(input.from) || !validDay(input.to) || input.from > input.to || input.to > today) reject("\u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0434\u0430\u0442\u044B \u043F\u0435\u0440\u0438\u043E\u0434\u0430.");
+    from = input.from;
+    to = input.to;
+  } else if (!["today", "7", "30", "all"].includes(period)) reject("\u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u044B\u0439 \u043F\u0435\u0440\u0438\u043E\u0434.");
+  const days = Math.round((Date.parse(to) - Date.parse(from)) / 864e5) + 1;
+  if (days > RETENTION_DAYS) from = addDays(to, 1 - RETENTION_DAYS);
+  const span = Math.round((Date.parse(to) - Date.parse(from)) / 864e5) + 1;
+  return { period, from, to, start: startOf(from), end: startOf(addDays(to, 1)), previousFrom: addDays(from, -span), previousTo: addDays(from, -1), timezone: "Asia/Qyzylorda" };
+}
+function summarizeAnalytics({ visitors, sessions, events, costs, range, now, registeredTotal, registeredPeriod, registeredPrevious, startedAt, snapshot = { withShifts: 0, withSalary: 0 } }) {
+  const aliases = new Map(visitors.map((v) => [v.id, v.actor || v.id])), actor = (id) => aliases.get(id) || id;
+  const people = /* @__PURE__ */ new Map(), visitRows = sessions.map((s) => ({ ...s, actor: actor(s.visitor) })), sessionById = new Map(visitRows.map((s) => [s.id, s]));
+  for (const v of visitors) {
+    const id = actor(v.id), old = people.get(id);
+    if (!old || v.first_at < old.first_at) people.set(id, { ...v, id });
+  }
+  const ev = events.map((e) => ({ ...e, actor: actor(e.visitor), count: Number(e.count || 1) }));
+  const activeActors = new Set(ev.filter((e) => ACTIVE.has(e.name)).map((e) => e.actor)), registeredActors = new Set(ev.filter((e) => e.name === "registration").map((e) => e.actor)), sessionsPerActor = /* @__PURE__ */ new Map();
+  for (const s of visitRows) {
+    if (!sessionsPerActor.has(s.actor)) sessionsPerActor.set(s.actor, /* @__PURE__ */ new Set());
+    sessionsPerActor.get(s.actor).add(s.id);
+  }
+  const between = (at, from = range.from, to = range.to) => dayAt(at) >= from && dayAt(at) <= to;
+  const uniq = (rows) => new Set(rows.map((r) => r.actor)).size;
+  function metrics(from, to) {
+    const visits = visitRows.filter((s) => between(s.first_at, from, to)), inside = ev.filter((e) => between(e.at, from, to)), ids = /* @__PURE__ */ new Set([...visits.map((s) => s.actor), ...inside.map((e) => e.actor)]), newCount = [...ids].filter((id) => between(people.get(id).first_at, from, to)).length;
+    const mature = visits.filter((s) => Date.parse(s.first_at) <= Date.parse(now) - 18e5), eventSessions = new Set(ev.filter((e) => e.name === "engaged" || ACTIVE.has(e.name)).map((e) => e.session));
+    return { visitors: ids.size, newVisitors: newCount, returningVisitors: ids.size - newCount, visits: visits.length, active: uniq(inside.filter((e) => ACTIVE.has(e.name))), shiftUsers: uniq(inside.filter((e) => ["shift_created", "shift_started"].includes(e.name))), salaryUsers: uniq(inside.filter((e) => e.name === "salary_view")), registered: inside.filter((e) => e.name === "registration").reduce((n, e) => n + e.count, 0), bounces: mature.filter((s) => !eventSessions.has(s.id)).length, finalizedSessions: mature.length, pendingSessions: visits.length - mature.length };
+  }
+  const current = metrics(range.from, range.to), previous = range.period === "all" ? null : metrics(range.previousFrom, range.previousTo);
+  const activeDays = /* @__PURE__ */ new Map(), visitDays = /* @__PURE__ */ new Map();
+  for (const s of visitRows) {
+    if (!visitDays.has(s.actor)) visitDays.set(s.actor, /* @__PURE__ */ new Set());
+    visitDays.get(s.actor).add(dayAt(s.first_at));
+  }
+  for (const e of ev) {
+    if (!visitDays.has(e.actor)) visitDays.set(e.actor, /* @__PURE__ */ new Set());
+    visitDays.get(e.actor).add(dayAt(e.at));
+    if (ACTIVE.has(e.name)) {
+      if (!activeDays.has(e.actor)) activeDays.set(e.actor, /* @__PURE__ */ new Set());
+      activeDays.get(e.actor).add(dayAt(e.at));
+    }
+  }
+  const endDay = range.to, activeWindow = (n) => [...activeDays.values()].filter((ds) => [...ds].some((d) => d >= addDays(endDay, 1 - n) && d <= endDay)).length;
+  const retention = [1, 3, 7, 30].map((n) => {
+    const eligible = [...people.values()].filter((p) => between(p.first_at) && addDays(dayAt(p.first_at), n) <= dayAt(now));
+    const returned = eligible.filter((p) => visitDays.get(p.id)?.has(addDays(dayAt(p.first_at), n))).length;
+    return { day: n, eligible: eligible.length, returned, percent: eligible.length ? returned / eligible.length * 100 : null };
+  });
+  const matureActivated = [...activeDays.entries()].filter(([, days]) => [...days].sort()[0] <= addDays(endDay, -7));
+  const continuing = matureActivated.filter(([, days]) => [...days].some((d) => d >= addDays(endDay, -6) && d <= endDay)).length;
+  const features = EVENTS.filter((n) => ACTIVE.has(n) || n === "feedback_sent").map((name) => {
+    const rows = ev.filter((e) => e.name === name && between(e.at));
+    return { name, events: rows.reduce((n, e) => n + e.count, 0), users: uniq(rows) };
+  }).sort((a, b) => b.users - a.users || b.events - a.events);
+  const sourceMap = /* @__PURE__ */ new Map();
+  for (const s of visitRows.filter((s2) => between(s2.first_at))) {
+    if (!sourceMap.has(s.source)) sourceMap.set(s.source, { source: s.source, visits: 0, people: /* @__PURE__ */ new Set() });
+    const row = sourceMap.get(s.source);
+    row.visits++;
+    row.people.add(s.actor);
+  }
+  for (const e of ev.filter((e2) => between(e2.at))) {
+    const source = sessionById.get(e.session)?.source || "direct";
+    if (!sourceMap.has(source)) sourceMap.set(source, { source, visits: 0, people: /* @__PURE__ */ new Set() });
+    sourceMap.get(source).people.add(e.actor);
+  }
+  const sources = [...sourceMap.values()].map(({ people: people2, ...s }) => ({ ...s, visitors: people2.size })).sort((a, b) => b.visitors - a.visitors);
+  const keys = /* @__PURE__ */ new Map();
+  for (const p of people.values()) keys.set(campaignKey(p), attribution(p));
+  for (const c of costs) keys.set(campaignKey(c), attribution(c));
+  for (const s of visitRows) if (between(s.first_at)) keys.set(campaignKey(s), attribution(s));
+  const campaigns = [...keys.entries()].map(([key, a]) => {
+    const cohort = [...people.values()].filter((p) => between(p.first_at) && campaignKey(p) === key), arrivals = visitRows.filter((s) => between(s.first_at) && campaignKey(s) === key);
+    const activated = cohort.filter((p) => activeActors.has(p.id)).length, registered = cohort.filter((p) => registeredActors.has(p.id)).length, returned = cohort.filter((p) => (sessionsPerActor.get(p.id)?.size || 0) > 1).length;
+    const expenses = costs.filter((c) => !c.voided && between(c.date + "T12:00:00+05:00") && campaignKey(c) === key);
+    const spend = [...new Set(expenses.map((c) => c.currency))].map((currency) => {
+      const amount = expenses.filter((c) => c.currency === currency).reduce((s, c) => s + Number(c.amount), 0);
+      return { currency, amount, perVisitor: cohort.length ? amount / cohort.length : null, perActivated: activated ? amount / activated : null, perRegistration: registered ? amount / registered : null };
+    });
+    return { key, ...a, visitors: uniq(arrivals), newVisitors: cohort.length, visits: arrivals.length, activated, registered, returned, spend };
+  }).filter((c) => c.visitors || c.newVisitors || c.spend.length).sort((a, b) => b.visitors - a.visitors);
+  const dailyMap = /* @__PURE__ */ new Map();
+  for (let day = range.from; day <= range.to; day = addDays(day, 1)) dailyMap.set(day, { date: day, visitorSet: /* @__PURE__ */ new Set(), activeSet: /* @__PURE__ */ new Set(), visits: 0, newVisitors: 0, registrations: 0 });
+  for (const s of visitRows) {
+    const d = dailyMap.get(dayAt(s.first_at));
+    if (d) {
+      d.visitorSet.add(s.actor);
+      d.visits++;
+    }
+  }
+  for (const e of ev) {
+    const d = dailyMap.get(dayAt(e.at));
+    if (d) {
+      d.visitorSet.add(e.actor);
+      if (ACTIVE.has(e.name)) d.activeSet.add(e.actor);
+      if (e.name === "registration") d.registrations += e.count;
+    }
+  }
+  for (const p of people.values()) {
+    const d = dailyMap.get(dayAt(p.first_at));
+    if (d) d.newVisitors++;
+  }
+  const daily = [...dailyMap.values()].map(({ visitorSet, activeSet, ...d }) => ({ ...d, visitors: visitorSet.size, active: activeSet.size }));
+  return { range, current, previous, daily, sources, features, campaigns, retention, engagement: { dau: activeWindow(1), wau: activeWindow(7), mau: activeWindow(30), eligible: matureActivated.length, continuing, percent: matureActivated.length ? continuing / matureActivated.length * 100 : null }, accounts: { total: registeredTotal, period: registeredPeriod, previous: registeredPrevious, ...snapshot }, coverage: { startedAt, retentionDays: RETENTION_DAYS, pseudonymous: true, consentOnly: true, allVisitors: people.size, allVisits: visitRows.length }, costs: costs.filter((c) => !c.voided && between(c.date + "T12:00:00+05:00")).sort((a, b) => b.date.localeCompare(a.date)).map((c) => ({ ...c, amount: Number(c.amount), version: Number(c.version) })) };
+}
+var CONSENT_VERSION, RETENTION_DAYS, EVENTS, ACTIVE, UUID, slug, analyticsDayFormatter, dayAt, addDays, startOf, validDay, campaignKey;
+var init_myshifts_metrics = __esm({
+  "myshifts-metrics.mjs"() {
+    CONSENT_VERSION = "2026-10-11";
+    RETENTION_DAYS = 400;
+    EVENTS = ["visit", "engaged", "dashboard_view", "shift_created", "shift_started", "shift_finished", "income_created", "revenue_recorded", "payment_recorded", "salary_view", "salary_settings_saved", "report_open", "goal_saved", "tip_recorded", "deduction_recorded", "schedule_created", "feedback_sent", "registration"];
+    ACTIVE = new Set(EVENTS.filter((e) => !["visit", "engaged", "registration", "feedback_sent"].includes(e)));
+    UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    slug = (v) => typeof v === "string" && /^[a-z0-9][a-z0-9_-]{0,63}$/i.test(v) ? v.toLowerCase() : "";
+    analyticsDayFormatter = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Qyzylorda" });
+    dayAt = (t) => analyticsDayFormatter.format(new Date(t));
+    addDays = (day, n) => new Date(Date.parse(day + "T12:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+    startOf = (day) => (/* @__PURE__ */ new Date(day + "T00:00:00+05:00")).toISOString();
+    validDay = (v) => typeof v === "string" && /^20\d\d-\d\d-\d\d$/.test(v) && Number.isFinite(Date.parse(v + "T12:00:00Z")) && (/* @__PURE__ */ new Date(v + "T12:00:00Z")).toISOString().slice(0, 10) === v;
+    campaignKey = (a) => JSON.stringify([a.source, a.medium, a.campaign]);
+  }
+});
+
+// hub-source.cjs
+var require_hub_source = __commonJS({
+  "hub-source.cjs"(exports2, module2) {
+    "use strict";
+    var { neon: neon2 } = require_serverless();
+    var { summarizeAnalytics: summarizeAnalytics2, periodRange: periodRange2, RETENTION_DAYS: RETENTION_DAYS2 } = (init_myshifts_metrics(), __toCommonJS(myshifts_metrics_exports));
+    var PERIODS = ["1", "7", "30", "90", "180", "all"];
+    var SOURCES2 = ["portfolio", "myshifts", "between"];
+    var NAMES = { portfolio: "\u041F\u043E\u0440\u0442\u0444\u043E\u043B\u0438\u043E", myshifts: "\u041C\u043E\u0438 \u0441\u043C\u0435\u043D\u044B", between: "Between Lines" };
+    var LINKS = { portfolio: "https://alexey-portfolio-uk1x.onrender.com/", myshifts: "https://moi-smeny.onrender.com/", between: "https://between-lines-lab.onrender.com/" };
+    var OWNER_LINKS = { portfolio: "https://alexey-portfolio-leads.onrender.com/owner", myshifts: "https://moi-smeny.onrender.com/admin.html", between: "https://between-lines-lab.onrender.com/owner" };
+    var MAX_ROWS = 5e4;
+    function bounded(rows) {
+      if (rows.length > MAX_ROWS) throw Error("Reporting limit exceeded");
+      return rows;
+    }
+    function makeReader2(uri) {
+      if (!uri) return null;
+      const sql = neon2(uri);
+      return (text, params = []) => sql.query(text, params);
+    }
+    function createOtherReports2({ myshifts, between, clock = () => Date.now() } = {}) {
+      async function myshiftsReport(period) {
+        if (!myshifts) throw Error("Source unavailable");
+        const now = new Date(clock()).toISOString();
+        const [coverage] = await myshifts("SELECT started_at FROM pl_reporting.coverage");
+        if (!coverage) throw Error("Missing reporting configuration");
+        const today = new Date(clock() + 5 * 36e5).toISOString().slice(0, 10), days = Number(period);
+        const input = period === "all" ? { period: "all" } : period === "1" ? { period: "today" } : { period: "custom", from: new Date(Date.parse(today + "T12:00:00Z") - (days - 1) * 864e5).toISOString().slice(0, 10), to: today };
+        const range = periodRange2(input, now, coverage.started_at), cutoff = new Date(clock() - RETENTION_DAYS2 * 864e5).toISOString();
+        const [visitors, sessions, events, costs, registrations, accounts, usage] = await Promise.all([
+          myshifts("SELECT id,actor,first_at,last_at,source,medium,campaign FROM pl_reporting.visitors WHERE last_at >= $1 LIMIT 50001", [cutoff]),
+          myshifts("SELECT id,visitor,first_at,last_at,source,medium,campaign FROM pl_reporting.sessions WHERE first_at >= $1 LIMIT 50001", [cutoff]),
+          myshifts("SELECT visitor,session,name,at,count FROM pl_reporting.events WHERE at >= $1 LIMIT 50001", [cutoff]),
+          myshifts("SELECT id,date,source,medium,campaign,amount,currency,version,voided FROM pl_reporting.costs WHERE date >= $1 LIMIT 50001", [range.previousFrom]),
+          myshifts("SELECT day,count FROM pl_reporting.registrations WHERE day >= $1 AND day <= $2", [range.previousFrom, range.to]),
+          myshifts("SELECT total FROM pl_reporting.account_totals"),
+          myshifts("SELECT with_shifts,with_salary FROM pl_reporting.work_usage")
+        ]);
+        [visitors, sessions, events, costs].forEach(bounded);
+        const registered = (from, to) => registrations.filter((r) => r.day >= from && r.day <= to).reduce((sum, r) => sum + Number(r.count), 0);
+        return summarizeAnalytics2({ visitors, sessions, events, costs, range, now, registeredTotal: Number(accounts[0].total), registeredPeriod: period === "all" ? Number(accounts[0].total) : registered(range.from, range.to), registeredPrevious: registered(range.previousFrom, range.previousTo), startedAt: coverage.started_at, snapshot: { withShifts: Number(usage[0]?.with_shifts || 0), withSalary: Number(usage[0]?.with_salary || 0) } });
+      }
+      async function betweenReport() {
+        if (!between) throw Error("Source unavailable");
+        const [totals] = await between("SELECT users,authors,published,returning_logins FROM pl_reporting.summary");
+        if (!totals) throw Error("Missing reporting configuration");
+        return { totals, scope: "all-time", updatedAt: new Date(clock()).toISOString() };
+      }
+      return { myshifts: myshiftsReport, between: betweenReport };
+    }
+    function createHub2(reports, clock = () => Date.now()) {
+      const cache = /* @__PURE__ */ new Map();
+      async function project(id, period) {
+        const cacheKey = id + ":" + (id === "between" ? "all" : period), existing = cache.get(cacheKey);
+        if (existing && existing.until > clock()) return existing.promise;
+        const entry = { until: clock() + 45e3, promise: null };
+        entry.promise = (async () => {
+          const common = { id, name: NAMES[id], url: LINKS[id], ownerUrl: OWNER_LINKS[id] };
+          try {
+            if (typeof reports[id] !== "function") throw Error("Source unavailable");
+            const data = await reports[id](period);
+            return { ...common, status: "ok", data, updatedAt: new Date(clock()).toISOString() };
+          } catch {
+            return { ...common, status: "unavailable", message: "\u0414\u0430\u043D\u043D\u044B\u0435 \u0432\u0440\u0435\u043C\u0435\u043D\u043D\u043E \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u044B. \u041E\u0431\u043D\u043E\u0432\u0438\u0442\u0435 \u043E\u0442\u0447\u0451\u0442 \u043F\u043E\u0437\u0436\u0435; \u044D\u0442\u043E \u043D\u0435 \u043D\u0443\u043B\u0435\u0432\u044B\u0435 \u043F\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u0438." };
+          }
+        })();
+        cache.set(cacheKey, entry);
+        return entry.promise;
+      }
+      return async (period) => {
+        if (!PERIODS.includes(period)) throw Object.assign(Error("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 \u043F\u0435\u0440\u0438\u043E\u0434."), { status: 400 });
+        return { period, timezone: "UTC+5", generatedAt: new Date(clock()).toISOString(), cacheSeconds: 45, projects: await Promise.all(SOURCES2.map((id) => project(id, period))) };
+      };
+    }
+    module2.exports = { createHub: createHub2, createOtherReports: createOtherReports2, makeReader: makeReader2, PERIODS };
+  }
+});
+
 // analytics-source.cjs
 var { neon, neonConfig } = require_serverless();
 var { createHmac, createHash, randomBytes, randomInt } = require("node:crypto");
 var fs = require("node:fs");
 var path = require("node:path");
+var { createHub, createOtherReports, makeReader } = require_hub_source();
 var PORTFOLIO = "https://alexey-portfolio-uk1x.onrender.com";
 var BACKEND = "https://alexey-portfolio-leads.onrender.com";
 var PROJECTS = ["shiftflow", "my-shifts", "north", "sever", "between-lines", "terra", "signal", "forma", "turbo", "wave", "atlas"];
 var SOURCES = ["direct", "telegram", "instagram", "headhunter", "olx", "github", "google", "bing", "other"];
-var UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+var UUID2 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 var hash = (v) => createHash("sha256").update(v).digest("hex");
 function validEvent(d) {
-  return d && typeof d === "object" && !Array.isArray(d) && Object.keys(d).every((k) => ["id", "visitor", "session", "kind", "target", "source", "device", "consent"].includes(k)) && d.consent === "2026-11-06" && [d.id, d.visitor, d.session].every((v) => typeof v === "string" && UUID.test(v)) && ["mobile", "desktop"].includes(d.device) && SOURCES.includes(d.source) && (d.kind === "view" && d.target === "" || d.kind === "project" && PROJECTS.includes(d.target) || d.kind === "contact" && ["telegram", "whatsapp"].includes(d.target) || d.kind === "lead" && d.target === "");
+  return d && typeof d === "object" && !Array.isArray(d) && Object.keys(d).every((k) => ["id", "visitor", "session", "kind", "target", "source", "device", "consent"].includes(k)) && d.consent === "2026-11-06" && [d.id, d.visitor, d.session].every((v) => typeof v === "string" && UUID2.test(v)) && ["mobile", "desktop"].includes(d.device) && SOURCES.includes(d.source) && (d.kind === "view" && d.target === "" || d.kind === "project" && PROJECTS.includes(d.target) || d.kind === "contact" && ["telegram", "whatsapp"].includes(d.target) || d.kind === "lead" && d.target === "");
 }
-function createAnalytics({ query, secret, sendCode, publicOrigin = PORTFOLIO, ownerOrigin = BACKEND, clock = () => Date.now(), secure = true } = {}) {
+function createAnalytics({ query, secret, sendCode, publicOrigin = PORTFOLIO, ownerOrigin = BACKEND, clock = () => Date.now(), secure = true, otherReports = {} } = {}) {
   const q = query, key = (label, value) => createHmac("sha256", secret).update(label + ":" + value).digest("hex");
   const limits = /* @__PURE__ */ new Map();
   let cleanupAt = 0;
@@ -5327,6 +5587,7 @@ function createAnalytics({ query, secret, sendCode, publicOrigin = PORTFOLIO, ow
     const [coverage] = await q("SELECT min(at) AS started_at FROM pl_events");
     return { totals: totals[0], daily, projects: PROJECTS.map((id) => ({ target: id, clicks: 0, browsers: 0, ...projects.find((p) => p.target === id) })).sort((a, b) => b.clicks - a.clicks), contacts, visitors: visitors.map((v) => ({ ...v, visitor: v.visitor.slice(0, 12) })), sources, from, to, days, timezone: "UTC+5", retentionDays: 180, startedAt: coverage.started_at };
   }
+  const hub = createHub({ portfolio: (period) => report(period === "all" ? 180 : Number(period)), ...otherReports }, clock);
   return async function route2(req, res) {
     const url = new URL(req.url, ownerOrigin), p = url.pathname, origin = req.headers.origin;
     if (!["/owner", "/owner/", "/owner.js", "/owner.css", "/api/analytics/event"].includes(p) && !p.startsWith("/api/owner/")) return false;
@@ -5417,6 +5678,14 @@ function createAnalytics({ query, secret, sendCode, publicOrigin = PORTFOLIO, ow
         respond(res, 401, { error: "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0432\u0445\u043E\u0434." });
         return true;
       }
+      if (p === "/api/owner/hub" && req.method === "GET") {
+        if (!limit("hub:" + session, 40, 6e4)) {
+          respond(res, 429, { error: "\u041E\u0431\u043D\u043E\u0432\u043B\u044F\u0439\u0442\u0435 \u043E\u0442\u0447\u0451\u0442 \u043D\u0435 \u0447\u0430\u0449\u0435 \u0440\u0430\u0437\u0430 \u0432 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0441\u0435\u043A\u0443\u043D\u0434." });
+          return true;
+        }
+        respond(res, 200, await hub(url.searchParams.get("period") || "7"));
+        return true;
+      }
       if (p === "/api/owner/logout" && req.method === "POST") {
         await q("DELETE FROM pl_owner_sessions WHERE token_hash=$1", [session]);
         respond(res, 200, { ok: true }, null, { "Set-Cookie": cookie("", 0) });
@@ -5452,7 +5721,7 @@ function route(req, res) {
   if (!production) {
     neonConfig.fetchFunction = (url, options) => fetch(url, { ...options, signal: AbortSignal.timeout(15e3) });
     const sql = neon(process.env.ANALYTICS_DATABASE_URL);
-    production = createAnalytics({ query: (text, params = []) => sql.query(text, params), secret: process.env.ANALYTICS_SECRET, sendCode: async (code) => {
+    production = createAnalytics({ query: (text, params = []) => sql.query(text, params), secret: process.env.ANALYTICS_SECRET, otherReports: createOtherReports({ myshifts: makeReader(process.env.MYSHIFTS_ANALYTICS_URL), between: makeReader(process.env.BETWEEN_ANALYTICS_URL) }), sendCode: async (code) => {
       const r = await fetch("https://api.telegram.org/bot" + process.env.TELEGRAM_BOT_TOKEN + "/sendMessage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text: "Program Lab \xB7 \u0432\u0445\u043E\u0434 \u0432 \u0430\u043D\u0430\u043B\u0438\u0442\u0438\u043A\u0443\n\n\u041A\u043E\u0434: " + code + "\n\u0414\u0435\u0439\u0441\u0442\u0432\u0443\u0435\u0442 10 \u043C\u0438\u043D\u0443\u0442, \u0442\u043E\u043B\u044C\u043A\u043E \u0434\u043B\u044F \u0432\u0430\u0441. \u041D\u0438\u043A\u043E\u043C\u0443 \u043D\u0435 \u043F\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0439\u0442\u0435 \u043A\u043E\u0434.\n\u0415\u0441\u043B\u0438 \u0432\u044B \u043D\u0435 \u0437\u0430\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u043B\u0438 \u0432\u0445\u043E\u0434, \u043F\u0440\u043E\u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0439\u0442\u0435 \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u0435." }), signal: AbortSignal.timeout(15e3) });
       const d = await r.json();
       if (!r.ok || !d.ok) throw Error("Telegram delivery failed");
@@ -5478,4 +5747,3 @@ module.exports = { route, createAnalytics, validEvent, PROJECTS };
      *)
   *)
 */
-
