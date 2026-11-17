@@ -2,17 +2,17 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),http=requ
 const {createHub,createOtherReports,makeReader}=require('./hub-source.cjs');
 const {createAnalytics}=require('./analytics-source.cjs');
 test('One failed project stays unavailable; good projects are preserved and concurrent loads deduplicate',async()=>{
- let count=0,now=1000;const hub=createHub({portfolio:async()=>{count++;await new Promise(r=>setTimeout(r,10));return {visits:2}},myshifts:async()=>{throw Error('secret database URI must never leak')},between:async()=>({users:3})},()=>now);
- const [a,b]=await Promise.all([hub('7'),hub('7')]);assert.equal(count,1);assert.deepEqual(a.projects,b.projects);assert.equal(a.projects[0].status,'ok');assert.equal(a.projects[1].status,'unavailable');assert.equal('data' in a.projects[1],false);assert.equal(JSON.stringify(a).includes('secret database'),false);assert.equal(a.projects[2].status,'ok');await assert.rejects(()=>hub('injected'),/период/);now+=46000;await hub('7');assert.equal(count,2);
+ let count=0,now=1000;const hub=createHub({portfolio:async()=>{count++;await new Promise(r=>setTimeout(r,10));return {visits:2}},shiftflow:async()=>({companies:1}),myshifts:async()=>{throw Error('secret database URI must never leak')},between:async()=>({users:3})},()=>now);
+ const [a,b]=await Promise.all([hub('7'),hub('7')]);assert.equal(count,1);assert.deepEqual(a.projects,b.projects);assert.equal(a.projects[0].status,'ok');assert.equal(a.projects.find(s=>s.id==='myshifts').status,'unavailable');assert.equal('data' in a.projects.find(s=>s.id==='myshifts'),false);assert.equal(JSON.stringify(a).includes('secret database'),false);assert.equal(a.projects.find(s=>s.id==='between').status,'ok');await assert.rejects(()=>hub('injected'),/период/);now+=46000;await hub('7');assert.equal(count,2);
 });
 test('Unified endpoint requires the existing owner session before reading any source',async t=>{
  const token='a'.repeat(64),hash=crypto.createHash('sha256').update(token).digest('hex');let calls=0;const q=async(sql,args)=>sql.startsWith('SELECT token_hash')&&args[0]===hash?[{token_hash:hash}]:[];
- const app=createAnalytics({query:q,secret:'test-only',sendCode:async()=>{},otherReports:{portfolio:async()=>{calls++;return {visits:1}},myshifts:async()=>{calls++;return {visits:2}},between:async()=>{calls++;return {users:3}}}});
+ const app=createAnalytics({query:q,secret:'test-only',sendCode:async()=>{},otherReports:{portfolio:async()=>{calls++;return {visits:1}},shiftflow:async()=>{calls++;return {companies:1}},myshifts:async()=>{calls++;return {visits:2}},between:async()=>{calls++;return {users:3}}}});
  const s=http.createServer(app);await new Promise(r=>s.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>s.close(r)));const base='http://127.0.0.1:'+s.address().port;
  assert.equal((await fetch(base+'/api/owner/hub')).status,401);assert.equal(calls,0);
  assert.equal((await fetch(base+'/api/owner/hub',{headers:{Cookie:'pl_owner='+'b'.repeat(64)}})).status,401);assert.equal(calls,0);
  assert.equal((await fetch(base+'/api/owner/hub?period=500',{headers:{Cookie:'pl_owner='+token}})).status,400);assert.equal(calls,0);
- const r=await fetch(base+'/api/owner/hub?period=7',{headers:{Cookie:'pl_owner='+token}});assert.equal(r.status,200);assert.equal((await r.json()).projects.length,3);assert.equal(calls,3);assert.equal(r.headers.get('access-control-allow-origin'),null);
+ const r=await fetch(base+'/api/owner/hub?period=7',{headers:{Cookie:'pl_owner='+token}});assert.equal(r.status,200);assert.equal((await r.json()).projects.length,4);assert.equal(calls,4);assert.equal(r.headers.get('access-control-allow-origin'),null);
  assert.equal((await fetch(base+'/api/owner/hub',{method:'POST',headers:{Origin:'https://evil.test',Cookie:'pl_owner='+token}})).status,403);
 });
 test('Actual test branches: restricted readers see reporting views, cannot read users or content, cannot write',{skip:!process.env.MYSHIFTS_ANALYTICS_URL},async()=>{

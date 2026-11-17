@@ -2,14 +2,22 @@
 const {neon}=require('@neondatabase/serverless');
 const {summarizeAnalytics,periodRange,RETENTION_DAYS}=require('./myshifts-metrics.mjs');
 const PERIODS=['1','7','30','90','180','all'];
-const SOURCES=['portfolio','myshifts','between'];
-const NAMES={portfolio:'Портфолио',myshifts:'Мои смены',between:'Between Lines'};
-const LINKS={portfolio:'https://alexey-portfolio-uk1x.onrender.com/',myshifts:'https://moi-smeny.onrender.com/',between:'https://between-lines-lab.onrender.com/'};
-const OWNER_LINKS={portfolio:'https://alexey-portfolio-leads.onrender.com/owner',myshifts:'https://moi-smeny.onrender.com/admin.html',between:'https://between-lines-lab.onrender.com/owner'};
+const SOURCES=['portfolio','shiftflow','myshifts','between'];
+const NAMES={portfolio:'Портфолио',shiftflow:'ShiftFlow',myshifts:'Мои смены',between:'Between Lines'};
+const LINKS={portfolio:'https://alexey-portfolio-uk1x.onrender.com/',shiftflow:'https://shiftflow-xmpy.onrender.com/',myshifts:'https://moi-smeny.onrender.com/',between:'https://between-lines-lab.onrender.com/'};
+const OWNER_LINKS={portfolio:'https://alexey-portfolio-leads.onrender.com/owner',shiftflow:'https://shiftflow-xmpy.onrender.com/admin',myshifts:'https://moi-smeny.onrender.com/admin.html',between:'https://between-lines-lab.onrender.com/owner'};
 const MAX_ROWS=50000;
 function bounded(rows){if(rows.length>MAX_ROWS)throw Error('Reporting limit exceeded');return rows;}
 function makeReader(uri){if(!uri)return null;const sql=neon(uri);return (text,params=[])=>sql.query(text,params);}
-function createOtherReports({myshifts,between,clock=()=>Date.now()}={}){
+function createOtherReports({myshifts,between,shiftflow,clock=()=>Date.now()}={}){
+ async function shiftflowReport(period){
+  if(!shiftflow)throw Error('Source unavailable');
+  const now=clock(),today=new Date(now+5*3600000).toISOString().slice(0,10);
+  const from=period==='all'?'-infinity':new Date(Date.parse(today+'T00:00:00+05:00')-(Number(period)-1)*86400000).toISOString(),to=new Date(now).toISOString();
+  const [row]=await shiftflow('SELECT pl_reporting.shiftflow_report($1::timestamptz,$2::timestamptz) AS report',[from,to]);
+  if(!row?.report?.totals||!row.report.current||!Array.isArray(row.report.daily))throw Error('Missing reporting configuration');
+  return {...row.report,from:period==='all'?null:from,to,scope:'operational',timezone:'UTC+5',includesTestData:true};
+ }
  async function myshiftsReport(period){
   if(!myshifts)throw Error('Source unavailable');
   const now=new Date(clock()).toISOString();
@@ -31,7 +39,7 @@ function createOtherReports({myshifts,between,clock=()=>Date.now()}={}){
   return summarizeAnalytics({visitors,sessions,events,costs,range,now,registeredTotal:Number(accounts[0].total),registeredPeriod:period==='all'?Number(accounts[0].total):registered(range.from,range.to),registeredPrevious:registered(range.previousFrom,range.previousTo),startedAt:coverage.started_at,snapshot:{withShifts:Number(usage[0]?.with_shifts||0),withSalary:Number(usage[0]?.with_salary||0)}});
  }
  async function betweenReport(){if(!between)throw Error('Source unavailable');const [totals]=await between('SELECT users,authors,published,returning_logins FROM pl_reporting.summary');if(!totals)throw Error('Missing reporting configuration');return {totals,scope:'all-time',updatedAt:new Date(clock()).toISOString()};}
- return {myshifts:myshiftsReport,between:betweenReport};
+ return {shiftflow:shiftflowReport,myshifts:myshiftsReport,between:betweenReport};
 }
 function createHub(reports,clock=()=>Date.now()){
  const cache=new Map();

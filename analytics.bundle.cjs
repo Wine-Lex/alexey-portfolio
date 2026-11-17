@@ -5446,10 +5446,10 @@ var require_hub_source = __commonJS({
     var { neon: neon2 } = require_serverless();
     var { summarizeAnalytics: summarizeAnalytics2, periodRange: periodRange2, RETENTION_DAYS: RETENTION_DAYS2 } = (init_myshifts_metrics(), __toCommonJS(myshifts_metrics_exports));
     var PERIODS = ["1", "7", "30", "90", "180", "all"];
-    var SOURCES2 = ["portfolio", "myshifts", "between"];
-    var NAMES = { portfolio: "\u041F\u043E\u0440\u0442\u0444\u043E\u043B\u0438\u043E", myshifts: "\u041C\u043E\u0438 \u0441\u043C\u0435\u043D\u044B", between: "Between Lines" };
-    var LINKS = { portfolio: "https://alexey-portfolio-uk1x.onrender.com/", myshifts: "https://moi-smeny.onrender.com/", between: "https://between-lines-lab.onrender.com/" };
-    var OWNER_LINKS = { portfolio: "https://alexey-portfolio-leads.onrender.com/owner", myshifts: "https://moi-smeny.onrender.com/admin.html", between: "https://between-lines-lab.onrender.com/owner" };
+    var SOURCES2 = ["portfolio", "shiftflow", "myshifts", "between"];
+    var NAMES = { portfolio: "\u041F\u043E\u0440\u0442\u0444\u043E\u043B\u0438\u043E", shiftflow: "ShiftFlow", myshifts: "\u041C\u043E\u0438 \u0441\u043C\u0435\u043D\u044B", between: "Between Lines" };
+    var LINKS = { portfolio: "https://alexey-portfolio-uk1x.onrender.com/", shiftflow: "https://shiftflow-xmpy.onrender.com/", myshifts: "https://moi-smeny.onrender.com/", between: "https://between-lines-lab.onrender.com/" };
+    var OWNER_LINKS = { portfolio: "https://alexey-portfolio-leads.onrender.com/owner", shiftflow: "https://shiftflow-xmpy.onrender.com/admin", myshifts: "https://moi-smeny.onrender.com/admin.html", between: "https://between-lines-lab.onrender.com/owner" };
     var MAX_ROWS = 5e4;
     function bounded(rows) {
       if (rows.length > MAX_ROWS) throw Error("Reporting limit exceeded");
@@ -5460,7 +5460,15 @@ var require_hub_source = __commonJS({
       const sql = neon2(uri);
       return (text, params = []) => sql.query(text, params);
     }
-    function createOtherReports2({ myshifts, between, clock = () => Date.now() } = {}) {
+    function createOtherReports2({ myshifts, between, shiftflow, clock = () => Date.now() } = {}) {
+      async function shiftflowReport(period) {
+        if (!shiftflow) throw Error("Source unavailable");
+        const now = clock(), today = new Date(now + 5 * 36e5).toISOString().slice(0, 10);
+        const from = period === "all" ? "-infinity" : new Date(Date.parse(today + "T00:00:00+05:00") - (Number(period) - 1) * 864e5).toISOString(), to = new Date(now).toISOString();
+        const [row] = await shiftflow("SELECT pl_reporting.shiftflow_report($1::timestamptz,$2::timestamptz) AS report", [from, to]);
+        if (!row?.report?.totals || !row.report.current || !Array.isArray(row.report.daily)) throw Error("Missing reporting configuration");
+        return { ...row.report, from: period === "all" ? null : from, to, scope: "operational", timezone: "UTC+5", includesTestData: true };
+      }
       async function myshiftsReport(period) {
         if (!myshifts) throw Error("Source unavailable");
         const now = new Date(clock()).toISOString();
@@ -5488,7 +5496,7 @@ var require_hub_source = __commonJS({
         if (!totals) throw Error("Missing reporting configuration");
         return { totals, scope: "all-time", updatedAt: new Date(clock()).toISOString() };
       }
-      return { myshifts: myshiftsReport, between: betweenReport };
+      return { shiftflow: shiftflowReport, myshifts: myshiftsReport, between: betweenReport };
     }
     function createHub2(reports, clock = () => Date.now()) {
       const cache = /* @__PURE__ */ new Map();
@@ -5721,7 +5729,7 @@ function route(req, res) {
   if (!production) {
     neonConfig.fetchFunction = (url, options) => fetch(url, { ...options, signal: AbortSignal.timeout(15e3) });
     const sql = neon(process.env.ANALYTICS_DATABASE_URL);
-    production = createAnalytics({ query: (text, params = []) => sql.query(text, params), secret: process.env.ANALYTICS_SECRET, otherReports: createOtherReports({ myshifts: makeReader(process.env.MYSHIFTS_ANALYTICS_URL), between: makeReader(process.env.BETWEEN_ANALYTICS_URL) }), sendCode: async (code) => {
+    production = createAnalytics({ query: (text, params = []) => sql.query(text, params), secret: process.env.ANALYTICS_SECRET, otherReports: createOtherReports({ shiftflow: makeReader(process.env.SHIFTFLOW_ANALYTICS_URL), myshifts: makeReader(process.env.MYSHIFTS_ANALYTICS_URL), between: makeReader(process.env.BETWEEN_ANALYTICS_URL) }), sendCode: async (code) => {
       const r = await fetch("https://api.telegram.org/bot" + process.env.TELEGRAM_BOT_TOKEN + "/sendMessage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text: "Program Lab \xB7 \u0432\u0445\u043E\u0434 \u0432 \u0430\u043D\u0430\u043B\u0438\u0442\u0438\u043A\u0443\n\n\u041A\u043E\u0434: " + code + "\n\u0414\u0435\u0439\u0441\u0442\u0432\u0443\u0435\u0442 10 \u043C\u0438\u043D\u0443\u0442, \u0442\u043E\u043B\u044C\u043A\u043E \u0434\u043B\u044F \u0432\u0430\u0441. \u041D\u0438\u043A\u043E\u043C\u0443 \u043D\u0435 \u043F\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0439\u0442\u0435 \u043A\u043E\u0434.\n\u0415\u0441\u043B\u0438 \u0432\u044B \u043D\u0435 \u0437\u0430\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u043B\u0438 \u0432\u0445\u043E\u0434, \u043F\u0440\u043E\u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0439\u0442\u0435 \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u0435." }), signal: AbortSignal.timeout(15e3) });
       const d = await r.json();
       if (!r.ok || !d.ok) throw Error("Telegram delivery failed");

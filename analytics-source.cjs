@@ -88,7 +88,7 @@ function route(req,res){
  if(!production){
   neonConfig.fetchFunction=(url,options)=>fetch(url,{...options,signal:AbortSignal.timeout(15000)});
   const sql=neon(process.env.ANALYTICS_DATABASE_URL);
-  production=createAnalytics({query:(text,params=[])=>sql.query(text,params),secret:process.env.ANALYTICS_SECRET,otherReports:createOtherReports({myshifts:makeReader(process.env.MYSHIFTS_ANALYTICS_URL),between:makeReader(process.env.BETWEEN_ANALYTICS_URL)}),sendCode:async code=>{
+  production=createAnalytics({query:(text,params=[])=>sql.query(text,params),secret:process.env.ANALYTICS_SECRET,otherReports:createOtherReports({shiftflow:makeReader(process.env.SHIFTFLOW_ANALYTICS_URL),myshifts:makeReader(process.env.MYSHIFTS_ANALYTICS_URL),between:makeReader(process.env.BETWEEN_ANALYTICS_URL)}),sendCode:async code=>{
    const r=await fetch('https://api.telegram.org/bot'+process.env.TELEGRAM_BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:process.env.TELEGRAM_CHAT_ID,text:'Program Lab · вход в аналитику\n\nКод: '+code+'\nДействует 10 минут, только для вас. Никому не передавайте код.\nЕсли вы не запрашивали вход, проигнорируйте сообщение.'}),signal:AbortSignal.timeout(15000)});const d=await r.json();if(!r.ok||!d.ok)throw Error('Telegram delivery failed');
   }});
  }
