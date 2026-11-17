@@ -15,8 +15,8 @@ function createOtherReports({myshifts,between,shiftflow,clock=()=>Date.now()}={}
   const now=clock(),today=new Date(now+5*3600000).toISOString().slice(0,10);
   const from=period==='all'?'-infinity':new Date(Date.parse(today+'T00:00:00+05:00')-(Number(period)-1)*86400000).toISOString(),to=new Date(now).toISOString();
   const [row]=await shiftflow('SELECT pl_reporting.shiftflow_report($1::timestamptz,$2::timestamptz) AS report',[from,to]);
-  if(!row?.report?.totals||!row.report.current||!Array.isArray(row.report.daily))throw Error('Missing reporting configuration');
-  return {...row.report,from:period==='all'?null:from,to,scope:'operational',timezone:'UTC+5',includesTestData:true};
+  if(!row?.report?.totals||!row.report.current||!Array.isArray(row.report.daily)||row.report.testDataExcluded!==true)throw Error('Missing reporting configuration');
+  return {...row.report,from:period==='all'?null:from,to,scope:'operational',timezone:'UTC+5',includesTestData:false};
  }
  async function myshiftsReport(period){
   if(!myshifts)throw Error('Source unavailable');
