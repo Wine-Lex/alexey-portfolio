@@ -42,3 +42,6 @@ body{font-size:16px;background:var(--paper)}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.project-stage,.project-card,.service,.lex-icon-slot,.btn{transition:none!important;transform:none!important}}
 
 .lab-section{padding:0 0 72px;background:var(--paper);scroll-margin-top:105px}.lab-section .lab-feature{margin:0}@media(max-width:760px){.lab-section{padding-bottom:48px;scroll-margin-top:90px}}
+
+/* Four working projects: keep every choice readable on small screens. */
+@media(max-width:1099px){.showcase-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.showcase-switch button{min-width:0}}

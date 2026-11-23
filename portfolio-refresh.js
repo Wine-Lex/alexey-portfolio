@@ -5,7 +5,8 @@
  const projects={
   shiftflow:{name:'ShiftFlow',address:'shiftflow-xmpy.onrender.com',description:'График команды и рабочие чек-листы',url:'https://shiftflow-xmpy.onrender.com/'},
   'my-shifts':{name:'Мои смены',address:'moi-smeny.onrender.com',description:'Смены, время и заработок в одном месте',url:'https://moi-smeny.onrender.com/'},
-  storio:{name:'Storio',address:'storio-pjof.onrender.com',description:'Истории, которые создают вместе',url:'https://storio-pjof.onrender.com/'}
+  storio:{name:'Storio',address:'storio-pjof.onrender.com',description:'Истории, которые создают вместе',url:'https://storio-pjof.onrender.com/'},
+  'between-lines':{name:'Between Lines',address:'between-lines-lab.onrender.com',description:'Авторская мастерская и библиотека читателя',url:'https://between-lines-lab.onrender.com/'}
  };
  const buttons=[...stage.querySelectorAll('[data-showcase-button]')];
  function show(id){
