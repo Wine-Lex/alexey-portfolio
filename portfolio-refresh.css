@@ -45,3 +45,6 @@ body{font-size:16px;background:var(--paper)}
 
 /* Four working projects: keep every choice readable on small screens. */
 @media(max-width:1099px){.showcase-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.showcase-switch button{min-width:0}}
+
+/* Expanded cases must not stretch their neighbouring cards. */
+.project-gallery .project-grid{align-items:start}

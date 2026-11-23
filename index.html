@@ -2,6 +2,19 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // A refresh starts a clean view; ordinary anchor navigation stays available.
+    (() => {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      if (navigation?.type !== 'reload') return;
+      history.scrollRestoration = 'manual';
+      if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+      window.addEventListener('pageshow', () => {
+        document.querySelectorAll('.case-details[open]').forEach(detail => { detail.open = false; });
+        window.scrollTo({top: 0, left: 0, behavior: 'instant'});
+      }, {once: true});
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172822">
   <meta name="description" content="Алексей Курсанов — создание и доработка сайтов, исправление ошибок, мобильная адаптация и формы заявок. Работающие примеры сайтов и интерактивных проектов.">
