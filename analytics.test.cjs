@@ -4,6 +4,7 @@ const {neon}=require('@neondatabase/serverless');const {createAnalytics,validEve
 test('Event schema rejects personal data and unknown destinations',()=>{
  const e={id:randomUUID(),visitor:randomUUID(),session:randomUUID(),kind:'view',target:'',source:'direct',device:'mobile',consent:'2026-11-06'};
  assert.equal(validEvent(e),true);for(const bad of [{...e,email:'private@example.com'},{...e,target:'https://evil.test'},{...e,consent:false},{...e,kind:'project',target:'fake'},{...e,source:'Full sensitive URL'}])assert.equal(validEvent(bad),false);
+ assert.equal(validEvent({...e,kind:'project',target:'storio'}),true);
 });
 test('Real isolated Postgres: auth, privacy, deduplication, visits and project attribution',{skip:!process.env.ANALYTICS_DATABASE_URL},async t=>{
  const sql=neon(process.env.ANALYTICS_DATABASE_URL),q=(s,p=[])=>sql.query(s,p);

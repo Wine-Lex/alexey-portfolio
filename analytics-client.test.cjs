@@ -12,3 +12,12 @@ test('Accept records minimal view, reload reuses browser/session, contact and pr
 test('Owner exclusion overrides prior consent and clears browser id',()=>{const b=browser();b.elements.find(e=>e.textContent==='Разрешить').onclick();const excluded=browser(b.storage,'#pl-owner-exclude');assert.equal(excluded.requests.length,0);assert.equal(excluded.storage.has('pl-analytics-browser'),false);assert.equal(browser(excluded.storage).requests.length,0)});
 test('Revoking consent clears IDs and stops subsequent form analytics',()=>{const b=browser();b.elements.find(e=>e.textContent==='Разрешить').onclick();b.elements.find(e=>e.textContent==='Конфиденциальность'&&e.tag==='button').onclick();b.elements.filter(e=>e.textContent==='Без аналитики').at(-1).onclick();b.listeners['pl:lead-sent']();assert.equal(b.requests.length,1);assert.equal(b.storage.has('pl-analytics-browser'),false)});
 
+test('Current Telegram/WhatsApp and the Storio showcase count only after consent',()=>{
+ const b=browser();const click=a=>b.listeners.click({target:{closest:()=>a}});
+ const hero={href:'https://storio-pjof.onrender.com/',dataset:{projectTarget:'storio'},closest:()=>null};
+ click(hero);assert.equal(b.requests.length,0);
+ b.elements.find(e=>e.textContent==='Разрешить').onclick();
+ click({href:'https://t.me/ProgramLabWeb'});click({href:'https://wa.me/77714199846'});click(hero);
+ assert.deepEqual(b.requests.map(r=>[r.kind,r.target]),[['view',''],['contact','telegram'],['contact','whatsapp'],['project','storio']]);
+});
+

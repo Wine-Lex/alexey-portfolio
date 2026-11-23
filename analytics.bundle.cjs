@@ -5534,7 +5534,7 @@ var path = require("node:path");
 var { createHub, createOtherReports, makeReader } = require_hub_source();
 var PORTFOLIO = "https://alexey-portfolio-uk1x.onrender.com";
 var BACKEND = "https://alexey-portfolio-leads.onrender.com";
-var PROJECTS = ["shiftflow", "my-shifts", "north", "sever", "between-lines", "terra", "signal", "forma", "turbo", "wave", "atlas"];
+var PROJECTS = ["shiftflow", "my-shifts", "storio", "north", "sever", "between-lines", "terra", "signal", "forma", "turbo", "wave", "atlas"];
 var SOURCES = ["direct", "telegram", "instagram", "headhunter", "olx", "github", "google", "bing", "other"];
 var UUID2 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 var hash = (v) => createHash("sha256").update(v).digest("hex");

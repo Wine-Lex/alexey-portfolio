@@ -6,7 +6,7 @@ const path=require('node:path');
 const {createHub,createOtherReports,makeReader}=require('./hub-source.cjs');
 const PORTFOLIO='https://alexey-portfolio-uk1x.onrender.com';
 const BACKEND='https://alexey-portfolio-leads.onrender.com';
-const PROJECTS=['shiftflow','my-shifts','north','sever','between-lines','terra','signal','forma','turbo','wave','atlas'];
+const PROJECTS=['shiftflow','my-shifts','storio','north','sever','between-lines','terra','signal','forma','turbo','wave','atlas'];
 const SOURCES=['direct','telegram','instagram','headhunter','olx','github','google','bing','other'];
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const hash=v=>createHash('sha256').update(v).digest('hex');
