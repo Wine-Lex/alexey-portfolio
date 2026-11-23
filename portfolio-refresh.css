@@ -48,3 +48,42 @@ body{font-size:16px;background:var(--paper)}
 
 /* Expanded cases must not stretch their neighbouring cards. */
 .project-gallery .project-grid{align-items:start}
+
+/* Richer color across sections, with a self-contained request form. */
+.hero{background:radial-gradient(ellipse at 96% 8%,#c6b2ff 0,transparent 52%),radial-gradient(ellipse at 3% 95%,#d1ef99 0,transparent 48%),linear-gradient(120deg,#fbfaff,#e7e3ff)}
+.hero:before{border-color:#ffac9866}
+.project-stage{background:linear-gradient(140deg,#91c4ff,#b8a0ef 62%,#ffa88c);border-color:#b6a2e2}
+#services{background:linear-gradient(165deg,#fff8ee,#faf6ff 72%)}
+.service:nth-child(1){background:#e2d5ff;border-color:#c4a9f0!important}
+.service:nth-child(2){background:#d8e9ff;border-color:#a8c9f2!important}
+.service:nth-child(3){background:#def1b7;border-color:#b7d58a!important}
+.service:nth-child(4){background:#ffdbc9;border-color:#edb59e!important}
+.lab-section{background:linear-gradient(#faf6ff,#f1eaff)}
+.lab-feature{background:radial-gradient(circle at 92% 20%,#ffb69c 0,transparent 46%),linear-gradient(120deg,#d7c7ff,#e6dcff 60%,#f5bfd0);border-color:#c7afe9}
+.project-gallery{background:linear-gradient(145deg,#e2eeff,#eee5ff 52%,#ffe8d9);border-color:#d5c8e9}
+.project-gallery .project-card{border-top:4px solid #a186dc}
+.project-gallery .project-card:nth-child(4n+2){border-top-color:#599fbf}
+.project-gallery .project-card:nth-child(4n+3){border-top-color:#85ad52}
+.project-gallery .project-card:nth-child(4n){border-top-color:#df967b}
+#process{background:linear-gradient(160deg,#f9f4ff,#fff4e8 64%,#e9f3e3)}
+.process{gap:14px;background:transparent;border:0;overflow:visible}
+.process .step{padding:24px;border:1px solid #cfbee9;border-radius:20px;background:#e9dfff}
+.process .step:nth-child(2){background:#dcecff;border-color:#b6d0eb}
+.process .step:nth-child(3){background:#e6efc8;border-color:#c7d899}
+.process .step:nth-child(4){background:#ffe2cf;border-color:#e9c1a8}
+.step .number{color:#55686a}.step h3{margin-top:22px}
+.contact-section{background:linear-gradient(130deg,#e7dcff,#d8eafa 55%,#ffe0ce);padding:64px 0 74px}
+.contact{background:radial-gradient(ellipse at 0 0,#426a65,transparent 65%),linear-gradient(125deg,#203d3b,#353752);border:1px solid #48656a;border-radius:30px;gap:40px;padding:38px;align-items:center;box-shadow:0 18px 48px #3c345214}
+.contact>div{min-width:0}.contact .eyebrow{color:#ded1ff}.contact h2{color:#fff}.contact p,.contact .owner-info{color:#d6e4df}
+.contact .contact-details a{color:#e9f5e9}.contact-links .btn.primary{background:#d5f28c;color:#213a31}.contact-links .btn.secondary{background:#fff;color:#263d3b;border-color:#fff}
+.contact .brief{min-width:0;width:100%;align-self:start;padding:30px;border:1px solid #fff;border-radius:24px;background:#fbfaff;box-shadow:0 12px 34px #0e1a2526;gap:17px}
+.brief label{font-size:14px;font-weight:500;line-height:1.5;color:#344c50;gap:8px}
+.brief input,.brief textarea{display:block;min-width:0;padding:14px 15px;border:1px solid #c9d3e0;border-radius:12px;background:#fff;color:#17312e;font-size:16px;line-height:1.5;transition:border-color .15s,box-shadow .15s}
+.brief input::placeholder,.brief textarea::placeholder{color:#6c7b88;opacity:1}.brief textarea{min-height:112px}
+.brief input:focus,.brief textarea:focus{border-color:#8064bd;box-shadow:0 0 0 3px #d9cafa66;outline:none}
+.brief .btn{width:100%;justify-self:stretch;min-height:52px;background:#6846aa;color:#fff;border-radius:13px}.brief .btn:hover{background:#57378f}
+.contact .brief .contact-note,.contact .brief .feedback{max-width:none;color:#53666d;font-size:12px!important;line-height:1.6!important}
+.brief .feedback:empty{display:none}.footer{background:linear-gradient(115deg,#183c35,#343349)}
+@media(max-width:1000px){.contact{padding:28px;gap:25px}.contact .brief{padding:25px}}
+@media(max-width:760px){.process{gap:12px}.process .step{padding:20px}.contact-section{padding:44px 0 48px}.contact{padding:24px;gap:26px;border-radius:25px}.contact .brief{padding:22px;border-radius:19px;gap:16px}.brief label{font-size:13px}.brief input,.brief textarea{padding:12px;font-size:16px}.contact h2{font-size:35px}}
+@media(max-width:380px){.contact{padding:18px}.contact .brief{padding:17px}.contact h2{font-size:31px}.process{grid-template-columns:1fr}.brief input,.brief textarea{padding:11px}}
