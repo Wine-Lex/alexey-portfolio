@@ -131,4 +131,4 @@ body{background:var(--paper)}.top{background:#fbfcf8f5}.brand-avatar{border-colo
 .footer{background:#215237;border-color:#45825a}.footer-inner,.footer-owner{color:#e3efdc}.mobile-contact a:last-child{background:#b8fa50}.navlinks a:not(.nav-cta):hover,.strip>span:last-child{color:#7022dc}a:focus-visible,button:focus-visible,summary:focus-visible{outline-color:#7022dc}
 
 /* Show the supplied brand symbol clearly within the small header avatar. */
-.brand-avatar{position:relative;overflow:hidden;background:#050d05}.brand-avatar>img{position:absolute;display:block;width:275%;max-width:none;height:auto;left:-87.5%;top:-150%}
+.brand-avatar{position:relative;overflow:hidden;background:#050d05}.brand-avatar>img{position:absolute;display:block;width:180%;max-width:none;height:auto;left:-45%;top:-80%}
