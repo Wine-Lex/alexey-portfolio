@@ -129,3 +129,6 @@ body{background:var(--paper)}.top{background:#fbfcf8f5}.brand-avatar{border-colo
 .process .step:nth-child(n){border-top-color:#91cf58}.process .step:nth-child(3){border-top-color:#7022dc}.package-grid article:nth-child(2){background:#f3edfc;border-color:#c2a6e8}
 .contact-section{background:#ebf4df}.contact{background:radial-gradient(ellipse at 0 0,#38854e,transparent 66%),linear-gradient(125deg,#235e3e,#234b3a);border-color:#4d8a58}.contact .eyebrow{color:#d7bbff}.contact p,.contact .owner-info{color:#e0efdf}.contact .brief{background:#fcfdf8}.brief input:focus,.brief textarea:focus{border-color:#7022dc;box-shadow:0 0 0 3px #7022dc20}
 .footer{background:#215237;border-color:#45825a}.footer-inner,.footer-owner{color:#e3efdc}.mobile-contact a:last-child{background:#b8fa50}.navlinks a:not(.nav-cta):hover,.strip>span:last-child{color:#7022dc}a:focus-visible,button:focus-visible,summary:focus-visible{outline-color:#7022dc}
+
+/* Show the supplied brand symbol clearly within the small header avatar. */
+.brand-avatar{position:relative;overflow:hidden;background:#050d05}.brand-avatar>img{position:absolute;display:block;width:275%;max-width:none;height:auto;left:-87.5%;top:-150%}
