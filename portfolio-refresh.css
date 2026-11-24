@@ -135,3 +135,8 @@ body{background:var(--paper)}.top{background:#fbfcf8f5}.brand-avatar{border-colo
 
 /* Transparent brand asset: contain the whole mark, with no poster cropping. */
 .brand-avatar{background:#17372a;border-color:#9ce540}.brand-avatar>img{position:static;width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center}
+
+/* Dedicated studio and founder section; keep the established visual identity. */
+.studio-about{background:#f1f5eb;border-top:1px solid #d3e1c8}.studio-about .about{margin:0;padding:0;border:0;align-items:start}.studio-about .about h2{margin:16px 0 0}.founder-copy{display:grid;gap:15px}.founder-copy strong{color:#173c2b;font-weight:650}.studio-about .portrait-gallery{margin-top:30px}.navlinks{gap:19px}.navlinks a{white-space:nowrap}
+@media(min-width:761px) and (max-width:1099px){.navlinks{gap:11px;font-size:12px}.nav{gap:15px}.nav-cta{padding:11px 13px}}
+@media(max-width:760px){.studio-about .about{gap:24px}.founder-copy{gap:14px}.studio-about .portrait-gallery{margin-top:25px}.navlinks{gap:12px}}
