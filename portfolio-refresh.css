@@ -140,3 +140,19 @@ body{background:var(--paper)}.top{background:#fbfcf8f5}.brand-avatar{border-colo
 .studio-about{background:#f1f5eb;border-top:1px solid #d3e1c8}.studio-about .about{margin:0;padding:0;border:0;align-items:start}.studio-about .about h2{margin:16px 0 0}.founder-copy{display:grid;gap:15px}.founder-copy strong{color:#173c2b;font-weight:650}.studio-about .portrait-gallery{margin-top:30px}.navlinks{gap:19px}.navlinks a{white-space:nowrap}
 @media(min-width:761px) and (max-width:1099px){.navlinks{gap:11px;font-size:12px}.nav{gap:15px}.nav-cta{padding:11px 13px}}
 @media(max-width:760px){.studio-about .about{gap:24px}.founder-copy{gap:14px}.studio-about .portrait-gallery{margin-top:25px}.navlinks{gap:12px}}
+
+/* Lex leads at full width; other work-in-progress projects follow below. */
+.lab-section .lab-feature{width:100%}
+.development-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:22px;align-items:stretch}
+.development-card{min-width:0;display:flex;flex-direction:column;padding:27px;border:1px solid #cbd9c2;border-top:3px solid #7925dc;border-radius:22px;background:#fff;color:#173c2b}
+.development-card:nth-child(2){border-top-color:#91d442}.development-card-local{border-top-color:#7d9484}
+.development-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:27px}
+.development-mark{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:#7022dc;color:#fff;font-size:18px;font-weight:700;letter-spacing:-.6px}
+.development-card:nth-child(2) .development-mark{background:#b8fa50;color:#213d1c}.development-card-local .development-mark{background:#294c39;color:#eef6e8}
+.development-status{font-size:11px;line-height:1.4;border:1px solid #d2ddca;border-radius:30px;padding:6px 10px;white-space:nowrap;color:#456235;background:#f3f9ed}
+.development-type{font-size:11px;line-height:1.5;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#666276}
+.development-card h3{font-size:27px;font-weight:600;letter-spacing:-1px;line-height:1.2;margin:10px 0 16px}
+.development-card>p{font-size:15px;line-height:1.75;margin:0 0 24px;color:#526456}
+.development-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}.development-tags span{padding:5px 9px;border:1px solid #d7e1d0;border-radius:25px;font-size:11px;line-height:1.4;color:#53654a}
+@media(min-width:761px) and (max-width:1099px){.development-card{padding:22px}.development-top{gap:8px;flex-wrap:wrap}.development-card h3{font-size:24px}}
+@media(max-width:760px){.development-grid{grid-template-columns:1fr;gap:16px;margin-top:18px}.development-card{padding:25px}.development-top{margin-bottom:22px}.development-card h3{font-size:27px}}
