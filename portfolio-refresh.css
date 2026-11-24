@@ -149,6 +149,7 @@ body{background:var(--paper)}.top{background:#fbfcf8f5}.brand-avatar{border-colo
 .development-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:27px}
 .development-mark{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:#7022dc;color:#fff;font-size:18px;font-weight:700;letter-spacing:-.6px}
 .development-card:nth-child(2) .development-mark{background:#b8fa50;color:#213d1c}.development-card-local .development-mark{background:#294c39;color:#eef6e8}
+.development-card-local .development-mark-image{background:transparent;object-fit:contain}
 .development-status{font-size:11px;line-height:1.4;border:1px solid #d2ddca;border-radius:30px;padding:6px 10px;white-space:nowrap;color:#456235;background:#f3f9ed}
 .development-type{font-size:11px;line-height:1.5;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#666276}
 .development-card h3{font-size:27px;font-weight:600;letter-spacing:-1px;line-height:1.2;margin:10px 0 16px}
